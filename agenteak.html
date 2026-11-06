@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AA agenteak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --surface-2:#eef1f8; --text:#1b2033; --muted:#5b647d;
+  --border:#dde2ee; --accent:#4f46e5; --accent-soft:#e7e6ff; --accent-2:#0ea5a4;
+  --warn:#d97706; --warn-soft:#fff4e0; --danger:#dc2626; --danger-soft:#fde8e8;
+  --ok:#059669; --ok-soft:#e1f6ee; --shadow:0 6px 24px rgba(27,32,51,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1220; --surface:#171b2e; --surface-2:#1f2440; --text:#e8ebf5; --muted:#9aa3bf;
+    --border:#2b3254; --accent:#8b85ff; --accent-soft:#25234d; --accent-2:#2dd4bf;
+    --warn:#fbbf24; --warn-soft:#3a2d10; --danger:#f87171; --danger-soft:#3a1717;
+    --ok:#34d399; --ok-soft:#10301f; --shadow:0 6px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1220; --surface:#171b2e; --surface-2:#1f2440; --text:#e8ebf5; --muted:#9aa3bf;
+  --border:#2b3254; --accent:#8b85ff; --accent-soft:#25234d; --accent-2:#2dd4bf;
+  --warn:#fbbf24; --warn-soft:#3a2d10; --danger:#f87171; --danger-soft:#3a1717;
+  --ok:#34d399; --ok-soft:#10301f; --shadow:0 6px 24px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;font-size:16px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+
+/* Header */
+header{background:linear-gradient(135deg,var(--accent) 0%,#7c3aed 55%,var(--accent-2) 120%);color:#fff;padding:48px 0 72px}
+.badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:4px 12px;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.04em}
+header h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:800;line-height:1.1;margin:16px 0 12px}
+header p{font-size:1.1rem;max-width:640px;opacity:.93}
+.theme-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;width:40px;height:40px;cursor:pointer;font-size:1.1rem}
+header{position:relative}
+
+/* Tabs */
+nav.tabs{margin-top:-40px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:6px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;position:sticky;top:8px;z-index:10}
+nav.tabs button{flex:0 0 auto;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:.92rem;padding:10px 14px;border-radius:11px;cursor:pointer;white-space:nowrap}
+nav.tabs button:hover{background:var(--surface-2);color:var(--text)}
+nav.tabs button.active{background:var(--accent);color:#fff}
+
+main{padding:32px 0 64px}
+section.panel{display:none;animation:fade .3s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2{font-size:1.7rem;font-weight:800;margin-bottom:8px}
+h3{font-size:1.15rem;font-weight:700;margin-bottom:6px}
+.lead{color:var(--muted);font-size:1.05rem;margin-bottom:24px;max-width:760px}
+p+p{margin-top:10px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.mt{margin-top:20px}
+.icon{font-size:1.8rem;margin-bottom:8px;display:block}
+.muted{color:var(--muted)}
+ul.clean{list-style:none}
+ul.clean li{padding:6px 0 6px 26px;position:relative}
+ul.clean li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
+
+.callout{border-radius:14px;padding:16px 18px;border-left:5px solid;margin-top:20px}
+.callout.info{background:var(--accent-soft);border-color:var(--accent)}
+.callout.warn{background:var(--warn-soft);border-color:var(--warn)}
+.callout.danger{background:var(--danger-soft);border-color:var(--danger)}
+.callout.ok{background:var(--ok-soft);border-color:var(--ok)}
+.callout strong{display:block;margin-bottom:4px}
+
+/* Comparison */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.compare{grid-template-columns:1fr}}
+.compare .card h3{display:flex;align-items:center;gap:8px}
+.tag{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--surface-2);font-weight:700}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
+
+/* Loop */
+.loop-box{display:grid;grid-template-columns:minmax(260px,380px) 1fr;gap:24px;align-items:center}
+@media(max-width:760px){.loop-box{grid-template-columns:1fr}}
+.loop{position:relative;width:100%;max-width:340px;aspect-ratio:1;margin:0 auto}
+.loop svg{width:100%;height:100%}
+.node{cursor:pointer;transition:transform .2s}
+.node circle{fill:var(--surface);stroke:var(--border);stroke-width:3;transition:all .25s}
+.node.on circle{fill:var(--accent);stroke:var(--accent)}
+.node text{fill:var(--text);font-weight:700;font-size:13px;text-anchor:middle;font-family:Inter,sans-serif}
+.node .emoji{font-size:22px}
+.node.on text{fill:#fff}
+.ring{fill:none;stroke:var(--border);stroke-width:2;stroke-dasharray:6 6}
+.center-label{fill:var(--muted);font-size:13px;text-anchor:middle;font-weight:600;font-family:Inter,sans-serif}
+.step-detail h3{color:var(--accent)}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-weight:600;padding:9px 16px;border-radius:10px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.example-log{font-family:"JetBrains Mono",monospace;font-size:.83rem;background:var(--surface-2);border-radius:10px;padding:12px;margin-top:14px;min-height:64px}
+
+/* Components */
+.comp{display:flex;gap:14px;align-items:flex-start}
+.comp .num{flex:0 0 38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:800;display:grid;place-items:center}
+
+/* Autonomy slider */
+.levels{display:flex;gap:6px;margin:18px 0}
+.levels button{flex:1;border:1px solid var(--border);background:var(--surface);color:var(--muted);font:inherit;font-weight:700;padding:12px 4px;border-radius:10px;cursor:pointer;font-size:.9rem}
+.levels button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.meter{height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin:8px 0 2px}
+.meter span{display:block;height:100%;background:linear-gradient(90deg,var(--ok),var(--warn),var(--danger));transition:width .35s}
+.meter-labels{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted)}
+
+/* Examples filter */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--muted);font:inherit;font-size:.88rem;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer}
+.chip.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.ex .who{font-size:.8rem;font-weight:700;color:var(--accent-2);text-transform:uppercase;letter-spacing:.05em}
+.ex .flow{font-size:.9rem;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);color:var(--muted)}
+.ex .flow b{color:var(--text)}
+
+/* Checklist */
+.check label{display:flex;gap:12px;align-items:flex-start;padding:12px 4px;border-bottom:1px solid var(--border);cursor:pointer}
+.check label:last-child{border:0}
+.check input{width:20px;height:20px;margin-top:3px;accent-color:var(--accent);flex:0 0 auto}
+.progress-txt{font-weight:700;color:var(--accent)}
+
+/* Glossary */
+.search{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;margin-bottom:16px}
+dl.gloss{display:grid;gap:10px}
+dl.gloss div{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+dl.gloss dt{font-weight:700}
+dl.gloss dd{color:var(--muted);font-size:.95rem}
+
+/* Quiz */
+.q{margin-bottom:18px}
+.q .opts{display:grid;gap:8px;margin-top:10px}
+.q .opts button{text-align:left;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;padding:11px 14px;border-radius:10px;cursor:pointer}
+.q .opts button:hover:not(:disabled){border-color:var(--accent)}
+.q .opts button.right{background:var(--ok-soft);border-color:var(--ok)}
+.q .opts button.wrong{background:var(--danger-soft);border-color:var(--danger)}
+.q .fb{margin-top:8px;font-size:.92rem;color:var(--muted);display:none}
+.score{font-size:1.1rem;font-weight:700}
+
+footer{border-top:1px solid var(--border);padding:24px 0;color:var(--muted);font-size:.88rem;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="theme-btn" id="themeBtn" aria-label="Gai iluna/argia">🌓</button>
+  <div class="wrap">
+    <span class="badge">AA LANTALDEA · CIFP DON BOSCO LHII</span>
+    <h1>AA agenteak:<br>erantzutetik egitera</h1>
+    <p>Zer diren, nola funtzionatzen duten, zertarako balio duten gure ikastetxean eta zein mugaren barruan erabili behar ditugun.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="tabs" role="tablist">
+    <button class="active" data-tab="zer">1. Zer da?</button>
+    <button data-tab="nola">2. Nola dabil?</button>
+    <button data-tab="osagaiak">3. Osagaiak</button>
+    <button data-tab="autonomia">4. Autonomia</button>
+    <button data-tab="adibideak">5. Adibideak</button>
+    <button data-tab="arriskuak">6. Arriskuak</button>
+    <button data-tab="praktikak">7. Jardunbide egokiak</button>
+    <button data-tab="glosategia">8. Glosategia</button>
+    <button data-tab="proba">9. Probatu zeure burua</button>
+  </nav>
+
+  <main>
+
+    <!-- 1 ZER DA -->
+    <section class="panel active" id="zer">
+      <h2>Zer da AA agente bat?</h2>
+      <p class="lead">AA agente bat helburu bat jasotzen duen eta hura lortzeko <strong>urratsak berak planifikatu eta exekutatzen</strong> dituen sistema bat da: tresnak erabiltzen ditu, emaitzak behatzen ditu eta, behar izanez gero, plana zuzentzen du.</p>
+
+      <div class="compare">
+        <div class="card">
+          <h3>💬 Txatbota <span class="tag">Erantzun</span></h3>
+          <p class="muted">Galdera bat → erantzun bat. Zuk egiten duzu gainerako guztia.</p>
+          <ul class="clean mt">
+            <li>Testua sortzen du eskatutakoan</li>
+            <li>Ez du ezer egiten zure baimenik gabe</li>
+            <li>Elkarrizketa bakoitza urrats bakarra da</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:var(--accent)">
+          <h3>🤖 Agentea <span class="tag" style="background:var(--accent-soft);color:var(--accent)">Egin</span></h3>
+          <p class="muted">Helburu bat → hainbat urrats, tresnak eta erabakiak → emaitza.</p>
+          <ul class="clean mt">
+            <li>Zeregina azpi-zereginetan banatzen du</li>
+            <li>Bilatzaileak, fitxategiak, aplikazioak... erabiltzen ditu</li>
+            <li>Emaitza ikusi eta hurrengo urratsa erabakitzen du</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="table-wrap mt">
+        <table>
+          <thead><tr><th>Ezaugarria</th><th>LLM / Txatbota</th><th>Agentea</th></tr></thead>
+          <tbody>
+            <tr><td><b>Abiapuntua</b></td><td>Prompt bat</td><td>Helburu bat</td></tr>
+            <tr><td><b>Urratsak</b></td><td>Bat</td><td>Asko, berak erabakita</td></tr>
+            <tr><td><b>Tresnak</b></td><td>Gutxi edo bat ere ez</td><td>Bilaketa, kodea, fitxategiak, posta, egutegia...</td></tr>
+            <tr><td><b>Emaitza</b></td><td>Testu bat</td><td>Ekintza bat edo amaitutako lan bat</td></tr>
+            <tr><td><b>Zure rola</b></td><td>Egilea</td><td>Gainbegiralea</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout info">
+        <strong>Ideia nagusia</strong>
+        Txatbotari <em>“idatzi mezu bat”</em> eskatzen diozu. Agenteari <em>“antolatu bilera”</em> eskatzen diozu, eta berak begiratzen ditu egutegiak, idazten du mezua eta (baimena baduzu) bidaltzen du.
+      </div>
+    </section>
+
+    <!-- 2 NOLA DABIL -->
+    <section class="panel" id="nola">
+      <h2>Agentearen begizta</h2>
+      <p class="lead">Agente guztiek oinarrizko ziklo bera errepikatzen dute helburua lortu arte. Sakatu urrats bakoitza edo jarri martxan adibidea.</p>
+
+      <div class="card loop-box">
+        <div class="loop">
+          <svg viewBox="0 0 300 300" aria-hidden="false">
+            <circle class="ring" cx="150" cy="150" r="105"/>
+            <text class="center-label" x="150" y="146">Helburua</text>
+            <text class="center-label" x="150" y="164">lortu arte ↻</text>
+            <g class="node" data-step="0" transform="translate(150,45)"><circle r="40"/><text class="emoji" y="-2">👀</text><text y="20">Hautematea</text></g>
+            <g class="node" data-step="1" transform="translate(255,150)"><circle r="40"/><text class="emoji" y="-2">🧠</text><text y="20">Planifikatu</text></g>
+            <g class="node" data-step="2" transform="translate(150,255)"><circle r="40"/><text class="emoji" y="-2">🛠️</text><text y="20">Ekin</text></g>
+            <g class="node" data-step="3" transform="translate(45,150)"><circle r="40"/><text class="emoji" y="-2">🔍</text><text y="20">Ebaluatu</text></g>
+          </svg>
+        </div>
+        <div class="step-detail">
+          <h3 id="stepTitle">1. Hautematea</h3>
+          <p id="stepText">Agenteak testuingurua jasotzen du: zure eskaera, eskura dituen dokumentuak, aurreko urratsen emaitzak...</p>
+          <div class="controls">
+            <button class="btn primary" id="playBtn">▶ Adibidea martxan jarri</button>
+            <button class="btn" id="resetBtn">Berrabiarazi</button>
+          </div>
+          <div class="example-log" id="log"><span class="muted">Adibidea: “Prestatu 2. kurtsoko ikasleentzako 10 galderako test bat Ohmen legeari buruz, gure apunteetan oinarrituta.”</span></div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Kontuz begiztarekin</strong>
+        Urrats bakoitzean akats bat egon daiteke, eta akatsak metatu egiten dira. Horregatik da garrantzitsua gizakiak bidean edo amaieran berrikustea.
+      </div>
+    </section>
+
+    <!-- 3 OSAGAIAK -->
+    <section class="panel" id="osagaiak">
+      <h2>Agente baten osagaiak</h2>
+      <p class="lead">Agente bat ez da “AA berezi bat”: hizkuntza-eredu bat da, inguruan pieza gehigarriak dituena.</p>
+      <div class="grid g2">
+        <div class="card comp"><div class="num">1</div><div><h3>🧠 Eredua (LLM)</h3><p class="muted">“Garuna”: ulertu, arrazoitu eta erabakitzen du. Adib. Gemini, Claude, GPT.</p></div></div>
+        <div class="card comp"><div class="num">2</div><div><h3>📋 Jarraibideak</h3><p class="muted">Agentearen rola, mugak eta estiloa. “Zu zara Elektrizitateko irakasle laguntzailea…”</p></div></div>
+        <div class="card comp"><div class="num">3</div><div><h3>🛠️ Tresnak</h3><p class="muted">Kanpora jarduteko gaitasunak: web-bilaketa, Drive, posta, egutegia, kodea exekutatzea, nabigatzailea.</p></div></div>
+        <div class="card comp"><div class="num">4</div><div><h3>💾 Memoria</h3><p class="muted">Epe laburrekoa (zeregin honetan gertatutakoa) eta luzekoa (aurreko saioetako datuak, lehentasunak).</p></div></div>
+        <div class="card comp"><div class="num">5</div><div><h3>🗺️ Plangintza</h3><p class="muted">Helburu handia urrats txikietan banatzeko eta ordena erabakitzeko gaitasuna.</p></div></div>
+        <div class="card comp"><div class="num">6</div><div><h3>🚦 Baimenak eta mugak</h3><p class="muted">Zer egin dezakeen bakarrik eta zertarako behar duen zure “bai” esplizitua.</p></div></div>
+      </div>
+      <div class="callout info">
+        <strong>Agente anitzeko sistemak</strong>
+        Batzuetan hainbat agentek egiten dute lan elkarrekin: batek ikertzen du, besteak idazten du eta hirugarrenak berrikusten du. Irakasle-talde bat bezala, baina automatizatuta.
+      </div>
+    </section>
+
+    <!-- 4 AUTONOMIA -->
+    <section class="panel" id="autonomia">
+      <h2>Autonomia mailak</h2>
+      <p class="lead">Agente guztiek ez dute askatasun bera. Zenbat eta autonomia handiagoa, orduan eta kontrol eta arreta handiagoa behar da.</p>
+      <div class="card">
+        <div class="levels" id="levels">
+          <button class="active" data-l="0">0</button><button data-l="1">1</button><button data-l="2">2</button><button data-l="3">3</button><button data-l="4">4</button>
+        </div>
+        <h3 id="lvlTitle"></h3>
+        <p id="lvlText" class="muted"></p>
+        <p class="mt"><b>Adibidea gelan:</b> <span id="lvlEx"></span></p>
+        <div class="mt">
+          <div class="meter"><span id="lvlMeter"></span></div>
+          <div class="meter-labels"><span>Arrisku txikia</span><span>Gainbegiratze handia behar da</span></div>
+        </div>
+      </div>
+      <div class="callout ok">
+        <strong>Gure gomendioa ikastetxean</strong>
+        Gaur egun, <b>1. eta 2. mailetan</b> lan egitea: agenteak proposatu eta prestatu, irakasleak berrikusi eta erabaki. Ikasleei edo familiei eragiten dien ezer ez automatizatu gizakiaren berrikuspenik gabe.
+      </div>
+    </section>
+
+    <!-- 5 ADIBIDEAK -->
+    <section class="panel" id="adibideak">
+      <h2>Adibideak gure testuinguruan</h2>
+      <p class="lead">Lanbide Heziketako egunerokoan agenteek zer egin dezaketen. Iragazi rolaren arabera.</p>
+      <div class="chips" id="chips">
+        <button class="chip active" data-f="all">Denak</button>
+        <button class="chip" data-f="irakaslea">Irakaslea</button>
+        <button class="chip" data-f="ikaslea">Ikaslea</button>
+        <button class="chip" data-f="koordinazioa">Koordinazioa</button>
+        <button class="chip" data-f="tailerra">Tailerra</button>
+      </div>
+      <div class="grid g3" id="exGrid">
+        <div class="card ex" data-c="irakaslea"><div class="who">Irakaslea</div><h3>📝 Ariketa-bankua</h3><p class="muted">Zure apunteak irakurri, ariketak sortu maila desberdinetan eta errubrikarekin lotu.</p><div class="flow"><b>Tresnak:</b> Drive · dokumentuak · <b>Zuk:</b> berrikusi eta egokitu</div></div>
+        <div class="card ex" data-c="irakaslea"><div class="who">Irakaslea</div><h3>🔎 Ikerketa-txostena</h3><p class="muted">Gai bati buruzko iturri ugari bilatu, alderatu eta laburpen erreferentziatua prestatu.</p><div class="flow"><b>Tresnak:</b> web-bilaketa · <b>Zuk:</b> iturriak egiaztatu</div></div>
+        <div class="card ex" data-c="ikaslea"><div class="who">Ikaslea</div><h3>🧑‍🏫 Tutore sokratikoa</h3><p class="muted">Erantzuna eman beharrean, galderen bidez gidatzen du ikaslea zirkuitu baten akatsa aurkitzera.</p><div class="flow"><b>Tresnak:</b> apunteak · <b>Muga:</b> ez du soluzioa ematen</div></div>
+        <div class="card ex" data-c="ikaslea"><div class="who">Ikaslea</div><h3>🗂️ Proiektuaren antolatzailea</h3><p class="muted">ETHAZI erronka bat zereginetan banatu, epeak proposatu eta taldearen aurrerapena jarraitu.</p><div class="flow"><b>Tresnak:</b> zerrendak · egutegia · <b>Taldea:</b> erabakitzen du</div></div>
+        <div class="card ex" data-c="koordinazioa"><div class="who">Koordinazioa</div><h3>📅 Bilera-prestatzailea</h3><p class="muted">Aurreko akten laburpena, gai-zerrenda proposamena eta ekintza-puntuen jarraipena.</p><div class="flow"><b>Tresnak:</b> Drive · egutegia · <b>Zuk:</b> bidali aurretik onartu</div></div>
+        <div class="card ex" data-c="koordinazioa"><div class="who">Koordinazioa</div><h3>📊 Dokumentu-analisia</h3><p class="muted">Programazio didaktikoak alderatu eta konpetentzia digitalen hutsuneak identifikatu.</p><div class="flow"><b>Tresnak:</b> fitxategiak · taulak · <b>Zuk:</b> ondorioak atera</div></div>
+        <div class="card ex" data-c="tailerra"><div class="who">Tailerra</div><h3>⚙️ Diagnostiko-laguntzailea</h3><p class="muted">Sentsoreen datuak irakurri, anomaliak detektatu eta balizko arrazoiak proposatu ikas-fabrikan.</p><div class="flow"><b>Tresnak:</b> datuak · kodea · <b>Teknikariak:</b> esku hartzen du</div></div>
+        <div class="card ex" data-c="tailerra"><div class="who">Tailerra</div><h3>📦 Materialen inbentarioa</h3><p class="muted">Kontsumoak jarraitu, stock baxua detektatu eta eskaera-zerrenda prestatu.</p><div class="flow"><b>Tresnak:</b> kalkulu-orria · <b>Zuk:</b> eskaera onartu</div></div>
+        <div class="card ex" data-c="irakaslea"><div class="who">Irakaslea</div><h3>♿ Material egokituak</h3><p class="muted">Testu bat irakurketa errazera, bertsio laburrera edo euskara/gaztelania bikoitzera egokitu.</p><div class="flow"><b>Tresnak:</b> dokumentuak · <b>Zuk:</b> edukia zuzena dela egiaztatu</div></div>
+      </div>
+      <div class="callout info">
+        <strong>Gure ikastetxean, gaur</strong>
+        Google Workspace erabiltzen dugunez, <b>Gemini</b> da irakasleek eskura duten AA tresna. Bere funtzio agentikoak (adib. ikerketa sakona edo Workspace-eko aplikazioekin lan egitea) zure kontuan aktibatuta dauden ala ez egiaztatu.
+      </div>
+    </section>
+
+    <!-- 6 ARRISKUAK -->
+    <section class="panel" id="arriskuak">
+      <h2>Arriskuak eta mugak</h2>
+      <p class="lead">Agente batek gauzak <em>egiten</em> dituenez, akatsen ondorioak ere handiagoak dira.</p>
+      <div class="grid g2">
+        <div class="card"><span class="icon">🔐</span><h3>Datu pertsonalak</h3><p class="muted">Agenteak sarbidea badu Drivera edo postara, ikasleen datuak ere ikus ditzake. Ez eman sarbiderik datu sentikorrei eta kontsultatu Eraldi taldea ikasleen datuak dituzten esportazioak partekatu aurretik.</p></div>
+        <div class="card"><span class="icon">🌀</span><h3>Haluzinazioak kateatuta</h3><p class="muted">Lehen urratsean asmatutako datu batek ondorengo urrats guztiak kutsatzen ditu. Emaitzak beti egiaztatu.</p></div>
+        <div class="card"><span class="icon">🧨</span><h3>Prompt injekzioa</h3><p class="muted">Web-orri edo dokumentu batek ezkutuko aginduak izan ditzake (“ahaztu aurreko jarraibideak eta…”). Agenteak irakurtzen duena ez da zure agindua.</p></div>
+        <div class="card"><span class="icon">↩️</span><h3>Ekintza itzulezinak</h3><p class="muted">Mezu bat bidaltzea, fitxategi bat ezabatzea, nota bat argitaratzea... Ezin dira desegin. Eskatu beti baieztapena.</p></div>
+        <div class="card"><span class="icon">⚖️</span><h3>Erantzukizuna</h3><p class="muted">Agenteak egindakoaren erantzulea erabiltzailea da. Ebaluazio-erabakiak ez dira inoiz agente baten esku utzi behar.</p></div>
+        <div class="card"><span class="icon">🧠</span><h3>Ikaskuntza ordezkatzea</h3><p class="muted">Ikasleak zeregin osoa agenteari ematen badio, ez du konpetentzia garatzen. Diseinatu jarduerak prozesua ikusgai egiteko.</p></div>
+      </div>
+      <div class="callout danger">
+        <strong>Lerro gorriak</strong>
+        Ez sartu pasahitzik, ez eman agenteari ordainketa- edo kalifikazio-sistemetarako sarbiderik, eta ez utzi ikasleen inguruko erabakirik gizakiaren berrikuspenik gabe.
+      </div>
+    </section>
+
+    <!-- 7 PRAKTIKAK -->
+    <section class="panel" id="praktikak">
+      <h2>Jardunbide egokiak: egiaztapen-zerrenda</h2>
+      <p class="lead">Agente bat lan baterako erabili aurretik, markatu betetzen dituzun puntuak. <span class="progress-txt" id="checkProg">0 / 8</span></p>
+      <div class="card check" id="checklist">
+        <label><input type="checkbox"><span><b>Helburu argia</b> idatzi dut: zer, norentzat, zein formatutan eta noiz dagoen amaituta.</span></label>
+        <label><input type="checkbox"><span><b>Mugak</b> zehaztu ditut: zer EZ duen egin behar.</span></label>
+        <label><input type="checkbox"><span>Agenteak <b>behar dituen tresnak bakarrik</b> ditu eskura (ez nire Drive osoa).</span></label>
+        <label><input type="checkbox"><span>Ez dago <b>ikasleen datu pertsonalik</b> agenteak ikus dezakeen lekuan.</span></label>
+        <label><input type="checkbox"><span>Ekintza itzulezinen aurretik <b>baieztapena</b> eskatzen du.</span></label>
+        <label><input type="checkbox"><span><b>Urratsak ikusgai</b> ditut eta bidean geldiarazi dezaket.</span></label>
+        <label><input type="checkbox"><span>Emaitzaren <b>datuak eta iturriak egiaztatuko</b> ditut erabili aurretik.</span></label>
+        <label><input type="checkbox"><span>Ikasleekin erabiltzean, <b>AAren erabilera gardena</b> da eta ikaskuntza-prozesua babesten du.</span></label>
+      </div>
+      <div class="callout info">
+        <strong>Prompt-txantiloia agenteentzat</strong>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:.88rem;display:block;margin-top:6px">HELBURUA: … · TESTUINGURUA: … · ITURRIAK: … · MUGAK: ez egin … · FORMATUA: … · BAIEZTAPENA: eskatu niri … aurretik · AMAIERA: … dagoenean</span>
+      </div>
+    </section>
+
+    <!-- 8 GLOSATEGIA -->
+    <section class="panel" id="glosategia">
+      <h2>Glosategia</h2>
+      <p class="lead">Agenteen inguruko oinarrizko terminoak.</p>
+      <input class="search" id="glossSearch" type="search" placeholder="Bilatu terminoa…">
+      <dl class="gloss" id="gloss">
+        <div><dt>Agentea</dt><dd>Helburu bat lortzeko urratsak planifikatu eta tresnak erabiliz exekutatzen dituen AA sistema.</dd></div>
+        <div><dt>LLM (hizkuntza-eredu handia)</dt><dd>Testua ulertu eta sortzen duen eredua; agentearen “garuna”.</dd></div>
+        <div><dt>Tresna (tool)</dt><dd>Agenteak kanpoko munduan jarduteko erabiltzen duen funtzioa: bilaketa, fitxategiak, posta…</dd></div>
+        <div><dt>Begizta agentikoa</dt><dd>Hautematea → planifikatu → ekin → ebaluatu zikloa, helburua lortu arte errepikatua.</dd></div>
+        <div><dt>Memoria</dt><dd>Agenteak informazioa urratsen edo saioen artean gordetzeko duen gaitasuna.</dd></div>
+        <div><dt>Gizakia begiztan (human-in-the-loop)</dt><dd>Pertsona batek erabaki garrantzitsuak berrikusi eta onartzen ditu.</dd></div>
+        <div><dt>Prompt injekzioa</dt><dd>Agenteak irakurtzen duen edukian ezkutatutako aginduak, haren jokabidea desbideratzeko.</dd></div>
+        <div><dt>Haluzinazioa</dt><dd>Ereduak sinesgarria dirudien baina faltsua den informazioa sortzea.</dd></div>
+        <div><dt>Agente anitzeko sistema</dt><dd>Rol desberdinak dituzten hainbat agentek elkarlanean egiten duten sistema.</dd></div>
+        <div><dt>MCP (Model Context Protocol)</dt><dd>Agenteak aplikazio eta datu-iturri desberdinekin konektatzeko protokolo estandarra.</dd></div>
+        <div><dt>RAG</dt><dd>Erantzun aurretik dokumentu jakin batzuetan informazioa bilatzeko teknika; erantzunak iturrietan oinarritzen ditu.</dd></div>
+        <div><dt>Baimen minimoaren printzipioa</dt><dd>Agenteari zeregina egiteko behar duen sarbidea bakarrik ematea, ez gehiago.</dd></div>
+      </dl>
+    </section>
+
+    <!-- 9 PROBA -->
+    <section class="panel" id="proba">
+      <h2>Probatu zeure burua</h2>
+      <p class="lead">Bost galdera ulertu duzun egiaztatzeko. <span class="score" id="score"></span></p>
+      <div id="quiz"></div>
+      <button class="btn" id="quizReset">Berriro hasi</button>
+    </section>
+
+  </main>
+</div>
+
+<footer>AA Lantaldea · CIFP Don Bosco LHII · Errenteria</footer>
+
+<script>
+// Gaia
+(function(){
+  const root=document.documentElement, btn=document.getElementById('themeBtn');
+  let saved=null; try{saved=localStorage.getItem('aa-theme')}catch(e){}
+  if(saved) root.setAttribute('data-theme',saved);
+  btn.addEventListener('click',()=>{
+    const cur=root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    const next=cur==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('aa-theme',next)}catch(e){}
+  });
+})();
+
+// Fitxak
+document.querySelectorAll('nav.tabs button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.tab).classList.add('active');
+    b.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+  });
+});
+
+// Begizta
+const steps=[
+  {t:'1. Hautematea',d:'Agenteak testuingurua jasotzen du: zure eskaera, eskura dituen dokumentuak, aurreko urratsen emaitzak...'},
+  {t:'2. Planifikatu',d:'Helburua azpi-zereginetan banatzen du eta zein tresna erabili erabakitzen du.'},
+  {t:'3. Ekin',d:'Tresna bat erabiltzen du: dokumentu bat irakurri, bilaketa bat egin, fitxategi bat sortu...'},
+  {t:'4. Ebaluatu',d:'Emaitza helburuarekin alderatzen du. Ondo badago, amaitu; bestela, berriro planifikatu.'}
+];
+const ex=[
+  [0,'👀 Eskaera jaso: 10 galdera, Ohmen legea, 2. kurtsoa, gure apunteak.'],
+  [1,'🧠 Plana: (1) apunteak irakurri → (2) kontzeptu gakoak atera → (3) galderak idatzi → (4) egiaztatu.'],
+  [2,'🛠️ Drive-ko "Ohmen legea.pdf" irakurtzen…'],
+  [3,'🔍 Kontzeptuak: V = I·R, unitateak, seriea/paraleloa. Nahikoa da.'],
+  [2,'🛠️ 10 galdera idazten eta erantzun zuzenak markatzen…'],
+  [3,'🔍 Egiaztapena: 9. galderan kalkulu-akatsa → zuzentzen.'],
+  [3,'✅ Amaituta. Testa irakaslearen berrikuspenaren zain.']
+];
+const nodes=[...document.querySelectorAll('.node')];
+function setStep(i){
+  nodes.forEach(n=>n.classList.toggle('on',+n.dataset.step===i));
+  document.getElementById('stepTitle').textContent=steps[i].t;
+  document.getElementById('stepText').textContent=steps[i].d;
+}
+nodes.forEach(n=>n.addEventListener('click',()=>{stopPlay();setStep(+n.dataset.step)}));
+setStep(0);
+let timer=null;
+const log=document.getElementById('log');
+const intro=log.innerHTML;
+function stopPlay(){clearInterval(timer);timer=null}
+document.getElementById('playBtn').addEventListener('click',()=>{
+  stopPlay(); log.innerHTML=''; let k=0;
+  const run=()=>{
+    if(k>=ex.length){stopPlay();return}
+    setStep(ex[k][0]);
+    const line=document.createElement('div'); line.textContent=ex[k][1]; log.appendChild(line); k++;
+  };
+  run(); timer=setInterval(run,1700);
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{stopPlay();log.innerHTML=intro;setStep(0)});
+
+// Autonomia
+const lv=[
+  {t:'0. maila · Laguntzailea',d:'Galdera bati erantzuten dio. Ez du ezer egiten zure kabuz.',e:'Gemini-ri azalpen bat eskatzea.',m:8},
+  {t:'1. maila · Proposatzailea',d:'Urratsak proposatzen ditu; zuk egiten dituzu.',e:'Unitate didaktiko baten plangintza iradokitzea.',m:28},
+  {t:'2. maila · Exekutatzaile gainbegiratua',d:'Urratsak egiten ditu, baina ekintza garrantzitsu bakoitzaren aurretik zure baimena eskatzen du.',e:'Galdetegi bat sortu eta Classroom-en zirriborro gisa uztea, zuk argitaratzeko.',m:50},
+  {t:'3. maila · Autonomoa mugekin',d:'Zeregin osoa egiten du eta amaieran berrikusten duzu.',e:'Iturriak bilatu eta txosten osoa prestatzea.',m:75},
+  {t:'4. maila · Guztiz autonomoa',d:'Bere kabuz jarduten du, etengabe, zure esku-hartzerik gabe.',e:'Ez da gomendagarria ikastetxean, ikasleei eragiten dieten prozesuetan.',m:97}
+];
+function setLvl(i){
+  document.querySelectorAll('#levels button').forEach(b=>b.classList.toggle('active',+b.dataset.l===i));
+  document.getElementById('lvlTitle').textContent=lv[i].t;
+  document.getElementById('lvlText').textContent=lv[i].d;
+  document.getElementById('lvlEx').textContent=lv[i].e;
+  document.getElementById('lvlMeter').style.width=lv[i].m+'%';
+}
+document.querySelectorAll('#levels button').forEach(b=>b.addEventListener('click',()=>setLvl(+b.dataset.l)));
+setLvl(0);
+
+// Adibideak
+document.querySelectorAll('#chips .chip').forEach(c=>c.addEventListener('click',()=>{
+  document.querySelectorAll('#chips .chip').forEach(x=>x.classList.remove('active'));
+  c.classList.add('active');
+  document.querySelectorAll('#exGrid .ex').forEach(e=>{
+    e.style.display=(c.dataset.f==='all'||e.dataset.c===c.dataset.f)?'':'none';
+  });
+}));
+
+// Egiaztapen-zerrenda
+const cbs=[...document.querySelectorAll('#checklist input')];
+function upd(){document.getElementById('checkProg').textContent=cbs.filter(c=>c.checked).length+' / '+cbs.length}
+cbs.forEach(c=>c.addEventListener('change',upd));
+
+// Glosategia
+document.getElementById('glossSearch').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  document.querySelectorAll('#gloss > div').forEach(d=>{d.style.display=d.textContent.toLowerCase().includes(q)?'':'none'});
+});
+
+// Galdetegia
+const Q=[
+  {q:'Zein da agente baten eta txatbot baten arteko desberdintasun nagusia?',o:['Agenteak testu luzeagoak idazten ditu','Agenteak urratsak planifikatu eta tresnak erabiliz exekutatzen ditu','Agenteak ez du hizkuntza-eredurik erabiltzen'],a:1,f:'Agenteak helburu bat jasotzen du eta hura lortzeko ekintzak egiten ditu, ez erantzun bakarra.'},
+  {q:'Zein da begizta agentikoaren ordena zuzena?',o:['Ekin → hautematea → ebaluatu → planifikatu','Hautematea → planifikatu → ekin → ebaluatu','Planifikatu → ebaluatu → hautematea → ekin'],a:1,f:'Testuingurua jaso, plana egin, jardun eta emaitza ebaluatu; helburua lortu arte.'},
+  {q:'Web-orri batek “ahaztu aurreko jarraibideak” dio. Zer da hori?',o:['Haluzinazioa','Prompt injekzioa','Memoria'],a:1,f:'Agenteak irakurtzen duen edukia datua da, ez agindua.'},
+  {q:'Zein autonomia-maila gomendatzen da gaur egun ikastetxean?',o:['0 eta 4','1 eta 2','3 eta 4'],a:1,f:'Agenteak prestatu eta proposatu; irakasleak berrikusi eta erabaki.'},
+  {q:'Zer esan nahi du baimen minimoaren printzipioak?',o:['Agenteari zeregina egiteko behar duen sarbidea bakarrik ematea','Agenteak baimenik ez eskatzea','Baimenak urtean behin berrikustea'],a:0,f:'Zenbat eta sarbide gutxiago, orduan eta arrisku txikiagoa akats edo erasoen aurrean.'}
+];
+let answered=0, correct=0;
+function buildQuiz(){
+  answered=0; correct=0; document.getElementById('score').textContent='';
+  const box=document.getElementById('quiz'); box.innerHTML='';
+  Q.forEach((it,i)=>{
+    const d=document.createElement('div'); d.className='card q';
+    d.innerHTML='<h3>'+(i+1)+'. '+it.q+'</h3><div class="opts"></div><p class="fb"></p>';
+    const opts=d.querySelector('.opts'), fb=d.querySelector('.fb');
+    it.o.forEach((t,j)=>{
+      const b=document.createElement('button'); b.textContent=t;
+      b.addEventListener('click',()=>{
+        [...opts.children].forEach(x=>x.disabled=true);
+        opts.children[it.a].classList.add('right');
+        if(j===it.a){correct++; fb.innerHTML='<b>✅ Zuzena.</b> '+it.f}
+        else{b.classList.add('wrong'); fb.innerHTML='<b>❌ Ez da hori.</b> '+it.f}
+        fb.style.display='block'; answered++;
+        if(answered===Q.length) document.getElementById('score').textContent='Emaitza: '+correct+' / '+Q.length;
+      });
+      opts.appendChild(b);
+    });
+    box.appendChild(d);
+  });
+}
+document.getElementById('quizReset').addEventListener('click',buildQuiz);
+buildQuiz();
+</script>
+</body>
+</html>
